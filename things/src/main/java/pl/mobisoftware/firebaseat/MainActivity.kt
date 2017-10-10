@@ -2,14 +2,12 @@ package pl.mobisoftware.firebaseat
 
 import android.app.Activity
 import android.os.Bundle
-import java.io.IOException
-import android.util.Log
 import com.google.android.things.contrib.driver.button.Button
+import com.google.android.things.pio.Gpio
+import com.google.android.things.pio.GpioCallback
+import com.google.android.things.pio.PeripheralManagerService
 import timber.log.Timber
 import java.util.*
-
-private val TAG = MainActivity::class.java.simpleName
-private val gpioButtonPinName = "BUS NAME"
 
 class MainActivity : Activity() {
     private lateinit var mButton: Button
@@ -18,10 +16,21 @@ class MainActivity : Activity() {
 
     var counter = 0
 
+    var tempGpio: Gpio? = null
+
+    val gpioCallback = object : GpioCallback(){
+        override fun onGpioEdge(gpio: Gpio): Boolean {
+            Timber.d("Is movement : ${gpio.value}")
+            fManager.setMoveValue(gpio.value)
+            return true
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.plant(Timber.DebugTree())
         super.onCreate(savedInstanceState)
-        setupButton()
+
+        setInputGpio()
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
@@ -32,36 +41,23 @@ class MainActivity : Activity() {
         }, 0, 1000)
     }
 
+    fun setInputGpio(){
+        val manager = PeripheralManagerService()
+        tempGpio = manager.openGpio("BCM4")
+        tempGpio?.setDirection(Gpio.DIRECTION_IN)
+
+        tempGpio?.setActiveType(Gpio.ACTIVE_HIGH)
+        tempGpio?.setEdgeTriggerType(Gpio.EDGE_BOTH)
+
+        Timber.d("Register gpio callback")
+        tempGpio?.registerGpioCallback(gpioCallback)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        destroyButton()
+        tempGpio?.unregisterGpioCallback(gpioCallback)
+        tempGpio?.close()
     }
 
-    private fun setupButton() {
-        try {
-            mButton = Button(gpioButtonPinName,
-                    // high signal indicates the button is pressed
-                    // use with a pull-down resistor
-                    Button.LogicState.PRESSED_WHEN_HIGH
-            )
-            mButton.setOnButtonEventListener(object : Button.OnButtonEventListener {
-                override fun onButtonEvent(button: Button, pressed: Boolean) {
-                    // do something awesome
-                }
-            })
-        } catch (e: IOException) {
-            // couldn't configure the button...
-        }
-
-    }
-
-    private fun destroyButton() {
-        Log.i(TAG, "Closing button")
-        try {
-            mButton.close()
-        } catch (e: IOException) {
-            Log.e(TAG, "Error closing button", e)
-        }
-    }
 
 }

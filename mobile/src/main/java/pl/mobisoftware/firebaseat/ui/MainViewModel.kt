@@ -14,6 +14,7 @@ import timber.log.Timber
 class MainViewModel(val firebaseManager: FirebaseManager): ViewModel() {
 
     val counterObservable = ObservableField<String>()
+    val moveObservable = ObservableField<String>()
 
     init {
         firebaseManager.listenCounterValue(object : ValueEventListener{
@@ -25,6 +26,16 @@ class MainViewModel(val firebaseManager: FirebaseManager): ViewModel() {
                 val value = snap?.value
                 Timber.d("New value $value")
                 counterObservable.set(value.toString())
+            }
+        })
+
+        firebaseManager.listenMoveValue(object : ValueEventListener{
+            override fun onCancelled(error: DatabaseError?) {
+                Timber.e(error?.message)
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                moveObservable.set(snapshot?.value.toString())
             }
         })
     }

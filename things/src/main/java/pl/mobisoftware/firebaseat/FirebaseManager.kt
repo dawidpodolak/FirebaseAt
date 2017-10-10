@@ -22,4 +22,8 @@ class FirebaseManager {
     fun setCounterValue(value: Int){
         fDatabase.getReference("counter").setValue(value)
     }
+
+    fun setMoveValue(value: Boolean){
+        fDatabase.getReference("move").setValue(value)
+    }
 }

@@ -18,5 +18,9 @@ class FirebaseManager {
         fDatabase.getReference("counter").addValueEventListener(valueListener)
     }
 
+    fun listenMoveValue(valueListener: ValueEventListener){
+        fDatabase.getReference("move").addValueEventListener(valueListener)
+    }
+
 
 }

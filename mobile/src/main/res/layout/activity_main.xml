@@ -8,7 +8,7 @@
             type="pl.mobisoftware.firebaseat.ui.MainViewModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -37,7 +38,27 @@
                 android:gravity="center"
                 android:text="@{viewModel.counterObservable}"
                 android:textSize="18sp" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="40dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Is movement:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@{viewModel.moveObservable}"
+                android:textSize="18sp" />
         </LinearLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
 </layout>
